@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulador Kustu Sasán Uma - Tetum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .config-item input {
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .config-item input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: span 2;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 18px 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 15px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-size: 16px;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .summary h3 {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .summary-item {
+            display: inline-block;
+            margin: 0 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-calculate {
+                grid-column: span 1;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔌 Kalkulador Kustu Sasán Uma</h1>
+            <p>Dadus ne'ebé ita fó ona (La muda buat ida)</p>
+        </div>
+
+        <div class="config-section">
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>Tarif kWh ($):</label>
+                    <input type="number" id="tarif_kwh" value="0.12" step="0.01" min="0">
+                </div>
+                <div class="config-item">
+                    <label>Loron ba Fulan:</label>
+                    <input type="number" id="loron_30" value="30" min="1">
+                </div>
+                <div class="config-item">
+                    <label>Fulan ba Tinan:</label>
+                    <input type="number" id="fulan_12" value="12" min="1">
+                </div>
+                <button class="btn-calculate" onclick="calculateCosts()">🔄 Kalkula Hotu!</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="costTable">
+                <thead>
+                    <tr>
+                        <th>NARAN SASÁN</th>
+                        <th>WATT</th>
+                        <th>H/L</th>
+                        <th>kWh/LRN</th>
+                        <th>$/LORON</th>
+                        <th>$/FULAN</th>
+                        <th>$/TINAN</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+
+            <div class="summary" id="summary" style="display: none;">
+                <h3>📊 Rezultadu Finál</h3>
+                <div class="summary-item" id="loronTotal">-</div>
+                <div class="summary-item" id="fulanTotal">-</div>
+                <div class="summary-item" id="tinanTotal">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sasan_uma_kompletu = {
+            "Jelera (Fridge)": [150, 24],
+            "Rice Cooker (Hanan)": [400, 1],
+            "Blender": [250, 0.5],
+            "Dispenser (Manas)": [350, 2],
+            "Mikrowave": [800, 0.2],
+            "TV LED 32-42 inch": [80, 6],
+            "Kipás (Fan) Sala": [60, 8],
+            "AC (1/2 PK)": [400, 8],
+            "Lâmpada (6 fuan)": [60, 12],
+            "Charge Fone (2 fone)": [30, 4],
+            "Laptop": [65, 5],
+            "Máquina Fase": [350, 1],
+            "Estrika (Iron)": [350, 1],
+            "Pompa bee": [250, 1],
+        };
+
+        function calculateCosts() {
+            const tarif_kwh = parseFloat(document.getElementById('tarif_kwh').value);
+            const loron_30 = parseInt(document.getElementById('loron_30').value);
+            const fulan_12 = parseInt(document.getElementById('fulan_12').value);
+            
+            let total_kwh_fulan = 0;
+            let tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            for (let sasan in sasan_uma_kompletu) {
+                let dadus = sasan_uma_kompletu[sasan];
+                let w = dadus[0]; // Watt
+                let o = dadus[1]; // Oras
+                
+                // Sura ba Loron Ida
+                let kwh_loron = (w * o) / 1000;
+                let kustu_loron = kwh_loron * tarif_kwh;
+                
+                // Sura ba Fulan no Tinan
+                let kustu_fulan = kustu_loron * loron_30;
+                let kustu_tinan = kustu_fulan * fulan_12;
+                
+                total_kwh_fulan += (kwh_loron * loron_30);
+                
+                // Tamba linha ba tabela
+                let row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${sasan}</td>
+                    <td>${w}</td>
+                    <td>${o}</td>
+                    <td>${kwh_loron.toFixed(2)}</td>
+                    <td>$${kustu_loron.toFixed(3)}</td>
+                    <td>$${kustu_fulan.toFixed(2)}</td>
+                    <td>$${kustu_tinan.toFixed(2)}</td>
+                `;
+            }
+
+            // Rezultadu Finál
+            let total_osan_loron = (total_kwh_fulan / 30) * tarif_kwh;
+            let total_osan_fulan = total_kwh_fulan * tarif_kwh;
+            let total_osan_tinan = total_osan_fulan * 12;
+
+            // Atualiza summary
+            document.getElementById('loronTotal').textContent = `LORON: $${total_osan_loron.toFixed(3)}`;
+            document.getElementById('fulanTotal').textContent = `FULAN: $${total_osan_fulan.toFixed(2)}`;
+            document.getElementById('tinanTotal').textContent = `TINAN: $${total_osan_tinan.toLocaleString('tl-TL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            document.getElementById('summary').style.display = 'block';
+            tableBody.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Kalkula automátiku bainhira karregar página
+        window.onload = function() {
+            calculateCosts();
+        };
+    </script>
+</body>
+</html>
